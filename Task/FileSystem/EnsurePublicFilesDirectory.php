@@ -5,9 +5,9 @@ namespace Thunder\Robo\Task\FileSystem;
 use Thunder\Robo\Utility\PathResolver;
 
 /**
- * Robo task base: Ensure public files directory.
+ * Robo task: Ensure public files directory.
  */
-class EnsurePublicFilesDirectory extends EnsureDirectory {
+class EnsurePublicFilesDirectory extends EnsureDirectorySkippedIfAcquia {
 
   /**
    * {@inheritdoc}

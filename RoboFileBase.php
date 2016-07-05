@@ -2,7 +2,9 @@
 
 namespace Thunder\Robo;
 
+use Robo\Result;
 use Thunder\Robo\Utility\Drupal;
+use Thunder\Robo\Utility\Environment;
 use Thunder\Robo\Utility\PathResolver;
 
 /**
@@ -15,6 +17,7 @@ class RoboFileBase extends \Robo\Tasks {
   use \Thunder\Robo\Task\DatabaseDump\loadTasks;
   use \Thunder\Robo\Task\Drush\loadTasks;
   use \Thunder\Robo\Task\FileSystem\loadTasks;
+  use \Thunder\Robo\Task\Npm\loadTasks;
   use \Thunder\Robo\Task\Settings\loadTasks;
   use \Thunder\Robo\Task\Site\loadTasks;
 
@@ -35,6 +38,9 @@ class RoboFileBase extends \Robo\Tasks {
    * changes (e.g. config updates).
    *
    * @param string $environment An environment string.
+   *
+   * @return Result|null
+   *   The command result.
    */
   public function dumpUpdate($environment) {
     // Show notice fro dropped database tables.
@@ -45,8 +51,10 @@ class RoboFileBase extends \Robo\Tasks {
 
     if ($continue) {
       $collection = $this->dumpUpdateCollection($environment);
-      $collection->run();
+      return $collection->run();
     }
+
+    return NULL;
   }
 
   /**
@@ -62,8 +70,8 @@ class RoboFileBase extends \Robo\Tasks {
     $dump = PathResolver::databaseDump();
     $collection = $this->collection();
 
-    // Perform basic setup.
-    $collection->add($this->taskSiteSetup($environment)->collection());
+    // Initialize site.
+    $collection->add($this->taskSiteInitialize($environment)->collection());
 
     $collection->add([
       // Drop all database tables.
@@ -84,27 +92,6 @@ class RoboFileBase extends \Robo\Tasks {
   }
 
   /**
-   * Return task collection for 'site:install' command.
-   *
-   * @param string $environment
-   *   An environment string.
-   *
-   * @return \Robo\Collection\Collection
-   *   The task collection.
-   */
-  protected function siteInstallCollection($environment) {
-    $collection = $this->collection();
-
-    // Perform basic setup.
-    $collection->add($this->taskSiteSetup($environment)->collection());
-
-    // Install site.
-    $collection->add($this->taskSiteInstall($environment)->collection());
-
-    return $collection;
-  }
-
-  /**
    * Install site.
    *
    * If a 'project.sql' database dump file is availble, the site will be
@@ -119,6 +106,9 @@ class RoboFileBase extends \Robo\Tasks {
    *
    * @option $force Force site install. This will drop all database tables and
    *   re-install the site, if it is already installed.
+   *
+   * @return Result|null
+   *   The command result.
    */
   public function siteInstall($environment, $opts = ['force' => FALSE]) {
     // Already installed -> Abort.
@@ -137,13 +127,35 @@ class RoboFileBase extends \Robo\Tasks {
         $this->yell('Site is already installed', 40, 'red');
         $this->say('Run <fg=yellow>site:update</fg=yellow> command instead.');
 
-        return;
+        return NULL;
       }
     }
 
     // Not installed -> run tasks.
     $collection = $this->siteInstallCollection($environment);
-    $collection->run();
+
+    return $collection->run();
+  }
+
+  /**
+   * Return task collection for 'site:install' command.
+   *
+   * @param string $environment
+   *   An environment string.
+   *
+   * @return \Robo\Collection\Collection
+   *   The task collection.
+   */
+  protected function siteInstallCollection($environment) {
+    $collection = $this->collection();
+
+    // Initialize site.
+    $collection->add($this->taskSiteInitialize($environment)->collection());
+
+    // Install site.
+    $collection->add($this->taskSiteInstall($environment)->collection());
+
+    return $collection;
   }
 
   /**
@@ -152,8 +164,14 @@ class RoboFileBase extends \Robo\Tasks {
    * Runs all update tasks on the site.
    *
    * @param string $environment An environment string.
+   * @param array $opts
+   *
+   * @option $maintenance-mode Take site offline during site update.
+   *
+   * @return Result|null
+   *   The command result.
    */
-  public function siteUpdate($environment) {
+  public function siteUpdate($environment, $opts = ['maintenance-mode' => FALSE]) {
     // Not installed -> Abort.
     if (!Drupal::isInstalled()) {
       $this->yell('Site is not installed', 40, 'red');
@@ -162,9 +180,29 @@ class RoboFileBase extends \Robo\Tasks {
 
     // Installed -> run tasks.
     else {
-      $collection = $this->siteUpdateCollection($environment);
-      $collection->run();
+      $collection = $this->collection();
+
+      // Take site offline (if --maintenance-mode option is set).
+      if ($opts['maintenance-mode']) {
+        $collection->add([
+          'Update.enableMaintenanceMode' => $this->taskSiteMaintenanceMode(TRUE)
+        ]);
+      }
+
+      // Perform update tasks.
+      $collection->add($this->siteUpdateCollection($environment));
+
+      // Bring site back online (if --maintenance-mode option is set).
+      if ($opts['maintenance-mode']) {
+        $collection->add([
+          'Update.disableMaintenanceMode' => $this->taskSiteMaintenanceMode(FALSE)
+        ]);
+      }
+
+      return $collection->run();
     }
+
+    return NULL;
   }
 
   /**
@@ -180,7 +218,7 @@ class RoboFileBase extends \Robo\Tasks {
     $collection = $this->collection();
 
     // Perform basic setup.
-    $collection->add($this->taskSiteSetup($environment)->collection());
+    $collection->add($this->taskSiteInitialize($environment)->collection());
 
     // Update site.
     $collection->add($this->taskSiteUpdate($environment)->collection());

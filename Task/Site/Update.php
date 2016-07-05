@@ -9,6 +9,7 @@ use Thunder\Robo\Task\Drush\ConfigImport;
 use Thunder\Robo\Task\Drush\LocaleUpdate;
 use Robo\Collection\Collection;
 use Robo\Task\BaseTask;
+use Thunder\Robo\Utility\Environment;
 
 /**
  * Robo task base: Update site.
@@ -40,6 +41,9 @@ class Update extends BaseTask {
    */
   public function collection() {
     $collection = new Collection();
+
+    // Set up filesystem.
+    $collection->add((new SetupFileSystem($this->environment))->collection());
 
     $collection->add([
       // Clear all caches.

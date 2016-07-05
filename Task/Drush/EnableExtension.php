@@ -33,7 +33,7 @@ class EnableExtension extends DrushTask {
       ->option('yes');
 
     foreach ($this->extensions as $extension) {
-      $exec->arg($extension);
+      $exec->arg(escapeshellarg($extension));
     }
 
     return $exec->run();

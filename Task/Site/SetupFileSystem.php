@@ -6,17 +6,13 @@ use Thunder\Robo\Task\FileSystem\EnsurePrivateFilesDirectory;
 use Thunder\Robo\Task\FileSystem\EnsurePublicFilesDirectory;
 use Thunder\Robo\Task\FileSystem\EnsureTemporaryFilesDirectory;
 use Thunder\Robo\Task\FileSystem\EnsureTranslationFilesDirectory;
-use Thunder\Robo\Task\Settings\EnsureSettingsFile;
-use Thunder\Robo\Utility\Environment;
-use Thunder\Robo\Utility\PathResolver;
 use Robo\Collection\Collection;
 use Robo\Task\BaseTask;
-use Robo\Task\Composer\Install;
 
 /**
- * Robo task base: Set up site.
+ * Robo task base: Set up file system.
  */
-class Setup extends BaseTask {
+class SetupFileSystem extends BaseTask {
 
   /**
    * Environment.
@@ -33,11 +29,6 @@ class Setup extends BaseTask {
    */
   public function __construct($environment) {
     $this->environment = $environment;
-
-    // Is valid environment?
-    if (!Environment::isValid($this->environment)) {
-      throw new \InvalidArgumentException('Unknown environment: ' . $this->environment);
-    }
   }
 
   /**
@@ -49,25 +40,15 @@ class Setup extends BaseTask {
   public function collection() {
     $collection = new Collection();
 
-    // Build has to be performed?
-    if (Environment::needsBuild($this->environment)) {
-      $collection->add([
-        // Run 'composer install'.
-        'Setup.composerInstall' => (new Install())->dir(PathResolver::root()),
-      ]);
-    }
-
     $collection->add([
       // Ensure private files directory.
-      'Setup.ensurePrivateFilesDirectory' => new EnsurePrivateFilesDirectory(),
+      'Setup.ensurePrivateFilesDirectory' => new EnsurePrivateFilesDirectory($this->environment),
       // Ensure public files directory.
-      'Setup.ensurePublicFilesDirectory' => new EnsurePublicFilesDirectory(),
+      'Setup.ensurePublicFilesDirectory' => new EnsurePublicFilesDirectory($this->environment),
       // Ensure temporary files directory.
-      'Setup.ensureTemporaryFilesDirectory' => new EnsureTemporaryFilesDirectory(),
+      'Setup.ensureTemporaryFilesDirectory' => new EnsureTemporaryFilesDirectory($this->environment),
       // Ensure translation files directory.
-      'Setup.ensureTranslationFilesDirectory' => new EnsureTranslationFilesDirectory(),
-      // Ensure settings file for environment.
-      'Setup.ensureSettingsFile' => new EnsureSettingsFile($this->environment),
+      'Setup.ensureTranslationFilesDirectory' => new EnsureTranslationFilesDirectory($this->environment),
     ]);
 
     return $collection;

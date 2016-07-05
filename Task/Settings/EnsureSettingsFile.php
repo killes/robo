@@ -56,6 +56,13 @@ class EnsureSettingsFile extends BaseTask {
   protected $environment;
 
   /**
+   * File path.
+   *
+   * @var string
+   */
+  protected $file;
+
+  /**
    * Constructor.
    *
    * @param string $environment
@@ -63,16 +70,15 @@ class EnsureSettingsFile extends BaseTask {
    */
   public function __construct($environment) {
     $this->environment = $environment;
+    $this->file = PathResolver::siteDirectory() . '/settings.' . $this->environment . '.php';
   }
 
   /**
    * {@inheritdoc}
    */
   public function run() {
-    $file = PathResolver::siteDirectory() . '/settings.' . $this->environment . '.php';
-
-    if (!file_exists($file)) {
-      $this->say('Settings file not available: ' . $file);
+    if (!$this->skip()) {
+      $this->say('Settings file not available: ' . $this->file);
       $this->say('Let\'s create one...');
 
       $this->db_host = $this->askDefault('Host', 'localhost');
@@ -81,7 +87,7 @@ class EnsureSettingsFile extends BaseTask {
       $this->db_user = $this->askDefault('User', 'root');
       $this->db_pass = $this->askDefault('Password', '');
 
-      return (new Write($file))
+      return (new Write($this->file))
         ->lines($this->lines())
         ->run();
     }
@@ -115,7 +121,7 @@ class EnsureSettingsFile extends BaseTask {
   protected function linesDatabaseConnection() {
     $lines = [
       '',
-      "\$databases['default']['default'] = array (",
+      "\$databases['default']['default'] = array(",
       "  'database' => '" . $this->db_name . "',",
       "  'username' => '" . $this->db_user . "',",
       "  'password' => '" . $this->db_pass . "',",
@@ -140,7 +146,7 @@ class EnsureSettingsFile extends BaseTask {
       '',
       '/**',
       ' * @file',
-      ' * Settings for ' . $this->environment . ' environment.',
+      ' * Settings for \'' . $this->environment . '\' environment.',
       ' *',
       ' * This file was generated automatically during Robo execution, but you may',
       ' * alter it to suite your needs.',
@@ -175,10 +181,26 @@ class EnsureSettingsFile extends BaseTask {
         '',
         '// Set error level to verbose.',
         '$config[\'system.logging\'][\'error_level\'] = \'verbose\';',
+        '',
+        '// Set temporary folder.',
+        '$config[\'system.file\'][\'path.temporary\'] = \'../tmp\';',
+        '',
+        '// Set private folder.',
+        '$settings[\'file_private_path\'] = \'../private\';',
       ]);
     }
 
     return $lines;
+  }
+
+  /**
+   * Task should be skipped?
+   *
+   * @return bool
+   *   Whether the task should be skipped or not?
+   */
+  protected function skip() {
+    return file_exists($this->file);
   }
 
 }

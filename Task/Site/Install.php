@@ -53,6 +53,12 @@ class Install extends BaseTask {
       $collection->add([
         // Install Drupal site.
         'Install.siteInstall' => new SiteInstall(),
+      ]);
+
+      // Set up file system.
+      $collection->add((new SetupFileSystem($this->environment))->collection());
+
+      $collection->add([
         // Ensure 'config' and 'locale' module.
         'Install.enableExtensions' => new EnableExtension(['config', 'locale']),
         // Update translations.
@@ -77,13 +83,7 @@ class Install extends BaseTask {
       ]);
 
       // Perform site update tasks
-      $update = new Update($this->environment);
-      $collection->add($update->collection());
-
-      // Display login URL.
-      $collection->add([
-        'Install.userLogin' => new UserLogin(),
-      ]);
+      $collection->add((new Update($this->environment))->collection());
     }
 
     return $collection;

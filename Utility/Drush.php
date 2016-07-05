@@ -15,9 +15,11 @@ class Drush {
    * @return \Robo\Task\Base\Exec
    */
   public static function exec() {
-    return (new Exec(PathResolver::drush()))
+    $exec = (new Exec(PathResolver::drush()))
       // Set working directory to docroot.
       ->dir(PathResolver::docroot());
+
+    return $exec;
   }
 
 }

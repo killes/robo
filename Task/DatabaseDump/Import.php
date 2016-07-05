@@ -15,7 +15,8 @@ class Import extends Dump {
   public function run() {
     return Drush::exec()
       ->arg('sql-cli')
-      ->arg('< ' . $this->filepath)
+      ->arg('<')
+      ->arg(escapeshellarg($this->filepath))
       ->run();
   }
 

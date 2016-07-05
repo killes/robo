@@ -2,6 +2,8 @@
 
 namespace Thunder\Robo\Utility;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 /**
  * A helper class for path resolving.
  */
@@ -44,7 +46,16 @@ class PathResolver {
    *   The path to the Drush binary.
    */
   public static function drush() {
-    return static::root() . '/vendor/drush/drush/drush';
+    // Use 'drush8' binary in Acquia environments.
+    if (Environment::isAcquia(Environment::detect())) {
+      return 'drush8';
+    }
+
+    // Use Drush binary from Composer vendor directory for all other
+    // environments.
+    else {
+      return static::root() . '/bin/drush';
+    }
   }
 
   /**
@@ -83,14 +94,14 @@ class PathResolver {
 
     if (isset($root) && !empty($root)) {
       if (isset($GLOBALS[$cid]) && !empty($GLOBALS[$cid])) {
-        throw new \Exception('PathResolver has already been initialized.');
+        throw new \Exception(__CLASS__ . ' - Is already initialized.');
       }
 
       $GLOBALS[$cid] = $root;
     }
 
     if (!isset($GLOBALS[$cid]) || empty($GLOBALS[$cid])) {
-      throw new \Exception('PathResolver is not initialized.');
+      throw new \Exception(__CLASS__ . ' - Not initialized.');
     }
 
     return $GLOBALS[$cid];
@@ -99,21 +110,26 @@ class PathResolver {
   /**
    * Return private files directory path.
    *
-   * @return string
-   *   The path to the private files directory of Drupal.
+   * @return string|null
+   *   If set, the absolute path to the private files directory of Drupal,
+   *   otherwise NULL.
    */
   public static function privateFilesDirectory() {
-    return static::root() . '/private';
+    if (($path = Drupal::privateFilesDirectory())) {
+      return static::absolute($path);
+    }
+
+    return NULL;
   }
 
   /**
    * Return public files directory path.
    *
    * @return string
-   *   The path to the public files directory of Drupal.
+   *   The absolute path to the public files directory of Drupal.
    */
   public static function publicFilesDirectory() {
-    return static::siteDirectory() . '/files';
+    return static::absolute(Drupal::publicFilesDirectory());
   }
 
   /**
@@ -130,10 +146,10 @@ class PathResolver {
    * Return temporary files directory path.
    *
    * @return string
-   *   The path to the temporary files directory of Drupal.
+   *   The absolute path to the temporary files directory of Drupal.
    */
   public static function temporaryFilesDirectory() {
-    return static::root() . '/tmp';
+    return static::absolute(Drupal::temporaryFilesDirectory());
   }
 
   /**
@@ -144,6 +160,28 @@ class PathResolver {
    */
   public static function translationFilesDirectory() {
     return static::publicFilesDirectory() . '/translations';
+  }
+
+  /**
+   * Return absolute path.
+   *
+   * This makes relative paths absolute using the docroot path as base.
+   *
+   * @param $path
+   *   The path to make absolute.
+   *
+   * @return string
+   *   The absolute path.
+   */
+  protected static function absolute($path) {
+    $fs = new Filesystem();
+
+    // Make path absolute (if not already).
+    if (!$fs->isAbsolutePath($path)) {
+      $path = realpath(static::docroot() . '/' . $path) ?: static::docroot() . '/' . $path;
+    }
+
+    return $path;
   }
 
 }

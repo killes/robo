@@ -5,7 +5,7 @@ namespace Thunder\Robo\Task\FileSystem;
 use Thunder\Robo\Utility\PathResolver;
 
 /**
- * Robo task base: Ensure translation files directory.
+ * Robo task: Ensure translation files directory.
  */
 class EnsureTranslationFilesDirectory extends EnsureDirectory {
 
@@ -14,6 +14,13 @@ class EnsureTranslationFilesDirectory extends EnsureDirectory {
    */
   protected function getPath() {
     return PathResolver::translationFilesDirectory();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function skip() {
+    return parent::skip() || !PathResolver::translationFilesDirectory();
   }
 
 }

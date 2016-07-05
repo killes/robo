@@ -15,10 +15,11 @@ class Export extends Dump {
   public function run() {
     return Drush::exec()
       ->arg('sql-dump')
-      ->arg('> ' . $this->filepath)
+      ->arg('>')
+      ->arg(escapeshellarg($this->filepath))
       ->option('ordered-dump')
       ->option('extra=--skip-comments')
-      ->option('structure-tables-list=' . implode(',', $this->getStructureOnlyTableList()))
+      ->option('structure-tables-list=' . escapeshellarg(implode(',', $this->getStructureOnlyTableList())))
       ->run();
   }
 

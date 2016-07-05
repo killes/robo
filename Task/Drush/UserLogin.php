@@ -33,7 +33,7 @@ class UserLogin extends DrushTask {
 
     return $this->exec()
       ->arg('user-login')
-      ->arg($this->user)
+      ->arg(escapeshellarg($this->user))
       ->option('no-browser')
       ->run();
   }

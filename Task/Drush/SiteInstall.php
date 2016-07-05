@@ -16,6 +16,9 @@ class SiteInstall extends DrushTask {
       ->arg('thunder')
       ->option('yes')
       ->option('notify')
+      ->option('account-name=admin')
+      ->option('account-pass=admin')
+      ->option('site-mail=admin@example.com')
       ->run();
   }
 

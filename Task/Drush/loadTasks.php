@@ -89,6 +89,24 @@ trait loadTasks {
   }
 
   /**
+   * Set a state value.
+   *
+   * @param string $key
+   *   The state key.
+   * @param mixed $value
+   *   The value to assign to the state key.
+   * @param string $format
+   *   The type for the value. Use 'auto' to detect format from value. Other
+   *   recognized values are 'string', 'integer', 'float' or 'boolean' for
+   *   corresponding primitive type, or 'json', 'yaml' for complex types.
+   *
+   * @return StateSet
+   */
+  protected function taskDrushStateSet($key, $value, $format = 'auto') {
+    return new StateSet($key, $value, $format);
+  }
+
+  /**
    * Display one-time login URL.
    *
    * @param int|string $user

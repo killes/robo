@@ -1,0 +1,19 @@
+{
+  "name": "burdamagazinorg/robo",
+  "type": "library",
+  "description": "Robo scripts, to be included in thunder-infrastructure projects.",
+  "keywords": ["robo","thunder"],
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "hctom"
+    }
+  ],
+  "require": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Thunder\\Robo\\": ""
+    }
+  }
+}

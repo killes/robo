@@ -2,12 +2,23 @@
 
 namespace Thunder\Robo\Utility;
 
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * A helper class for path resolving.
  */
 class PathResolver {
+
+  private static $devdesktopPath = '/Applications/DevDesktopasdasf';
+
+  public static function setDevdesktopPath($path) {
+    self::$devdesktopPath = $path;
+  }
+
+  public static function getDevdesktopPath() {
+    return self::$devdesktopPath;
+  }
 
   /**
    * Return path exported configration.
@@ -49,6 +60,13 @@ class PathResolver {
     // Use 'drush8' binary in Acquia environments.
     if (Environment::isAcquia(Environment::detect())) {
       return 'drush8';
+    }
+
+    else if(Environment::isDevdesktop()
+      && isset(self::$devdesktopPath)
+      && file_exists(self::$devdesktopPath.'/drush/drush')) {
+
+      return static::$devdesktopPath.'/drush/drush';
     }
 
     // Use Drush binary from Composer vendor directory for all other

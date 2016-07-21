@@ -200,7 +200,8 @@ class EnsureSettingsFile extends BaseTask {
    *   Whether the task should be skipped or not?
    */
   protected function skip() {
-    return file_exists($this->file);
+    // TODO: use a default development settings file for all local environments and add database config as necessary
+    return file_exists($this->file) || Environment::isDevdesktop();
   }
 
 }

@@ -2,7 +2,6 @@
 
 namespace Thunder\Robo\Utility;
 
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -11,7 +10,7 @@ use Symfony\Component\Filesystem\Filesystem;
 class PathResolver {
 
   /**
-   * @var string The path to the Acquia DevDesktop App
+   * @var string The path to the Acquia DevDesktop App (Defaults to MacOS path)
    */
   private static $devdesktopPath = '/Applications/DevDesktop';
 

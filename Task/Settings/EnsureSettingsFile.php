@@ -70,7 +70,8 @@ class EnsureSettingsFile extends BaseTask {
    */
   public function __construct($environment) {
     $this->environment = $environment;
-    $this->file = PathResolver::siteDirectory() . '/settings.' . $this->environment . '.php';
+    if(Environment::isDevdesktop()) $environment = Environment::LOCAL;
+    $this->file = PathResolver::siteDirectory() . '/settings.' . $environment . '.php';
   }
 
   /**
@@ -81,11 +82,14 @@ class EnsureSettingsFile extends BaseTask {
       $this->say('Settings file not available: ' . $this->file);
       $this->say('Let\'s create one...');
 
-      $this->db_host = $this->askDefault('Host', 'localhost');
-      $this->db_port = $this->askDefault('Port', '3306');
-      $this->db_name = $this->askDefault('Database', 'drupal');
-      $this->db_user = $this->askDefault('User', 'root');
-      $this->db_pass = $this->askDefault('Password', '');
+      // TODO: use a default development settings file for all local environments and add database config as necessary
+      if(!$this->skipDatabaseConnection()) {
+        $this->db_host = $this->askDefault('Host', 'localhost');
+        $this->db_port = $this->askDefault('Port', '3306');
+        $this->db_name = $this->askDefault('Database', 'drupal');
+        $this->db_user = $this->askDefault('User', 'root');
+        $this->db_pass = $this->askDefault('Password', '');
+      }
 
       return (new Write($this->file))
         ->lines($this->lines())
@@ -105,9 +109,15 @@ class EnsureSettingsFile extends BaseTask {
     $lines = array_merge(
       ['<?php'],
       $this->linesFileComment(),
-      $this->linesOverrides(),
-      $this->linesDatabaseConnection()
+      $this->linesOverrides()
     );
+
+    if(!$this->skipDatabaseConnection()) {
+      $lines = array_merge(
+        $lines,
+        $this->linesDatabaseConnection()
+      );
+    }
 
     return $lines;
   }
@@ -166,7 +176,7 @@ class EnsureSettingsFile extends BaseTask {
     $lines = [];
 
     // Add specific settings for local environment.
-    if ($this->environment === Environment::LOCAL) {
+    if ($this->environment === Environment::LOCAL || Environment::isDevdesktop()) {
       $lines = array_merge($lines, [
         '',
         '// Enable development services.',
@@ -200,8 +210,17 @@ class EnsureSettingsFile extends BaseTask {
    *   Whether the task should be skipped or not?
    */
   protected function skip() {
-    // TODO: use a default development settings file for all local environments and add database config as necessary
-    return file_exists($this->file) || Environment::isDevdesktop();
+    return file_exists($this->file);
+  }
+
+  /**
+   * Creation of database connection details should be skipped?
+   *
+   * @return bool
+   *  Whether the creation of database connection details should be skipped
+   */
+  protected function skipDatabaseConnection() {
+    return Environment::isDevdesktop();
   }
 
 }

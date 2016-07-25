@@ -10,7 +10,7 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class PathResolver {
 
-  private static $devdesktopPath = '/Applications/DevDesktopasdasf';
+  private static $devdesktopPath = '/Applications/DevDesktop';
 
   public static function setDevdesktopPath($path) {
     self::$devdesktopPath = $path;

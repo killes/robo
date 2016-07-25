@@ -10,12 +10,22 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class PathResolver {
 
+  /**
+   * @var string The path to the Acquia DevDesktop App
+   */
   private static $devdesktopPath = '/Applications/DevDesktop';
 
+  /**
+   * @param string $path
+   *  The path to Acquia DevDesktop
+   */
   public static function setDevdesktopPath($path) {
     self::$devdesktopPath = $path;
   }
 
+  /**
+   * @return string The path to Acquia DevDesktop
+   */
   public static function getDevdesktopPath() {
     return self::$devdesktopPath;
   }

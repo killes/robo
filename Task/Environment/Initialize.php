@@ -7,6 +7,10 @@ use Robo\Task\BaseTask;
 use Thunder\Robo\Utility\Environment;
 use Thunder\Robo\Utility\PathResolver;
 
+/**
+ * Robo task base: Initialize Environment.
+ */
+
 class Initialize extends BaseTask {
 
   /**
@@ -16,12 +20,18 @@ class Initialize extends BaseTask {
    */
   protected $environment;
 
+  /**
+   * Initialize constructor.
+   *
+   * @param string $environment
+   *  An environment string
+   */
   public function __construct($environment) {
     $this->environment = $environment;
   }
 
   /**
-   * @return \Robo\Result
+   * {@inheritdoc}
    */
   public function run() {
     Environment::set($this->environment);

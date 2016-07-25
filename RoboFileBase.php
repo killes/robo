@@ -20,6 +20,7 @@ class RoboFileBase extends \Robo\Tasks {
   use \Thunder\Robo\Task\Npm\loadTasks;
   use \Thunder\Robo\Task\Settings\loadTasks;
   use \Thunder\Robo\Task\Site\loadTasks;
+  use \Thunder\Robo\Task\Environment\loadTasks;
 
   /**
    * Constructor.
@@ -111,6 +112,7 @@ class RoboFileBase extends \Robo\Tasks {
    *   The command result.
    */
   public function siteInstall($environment, $opts = ['force' => FALSE]) {
+    $this->taskEnvironmentInitialize($environment)->run();
     // Already installed -> Abort.
     if (Drupal::isInstalled()) {
       $continue = FALSE;
@@ -172,6 +174,7 @@ class RoboFileBase extends \Robo\Tasks {
    *   The command result.
    */
   public function siteUpdate($environment, $opts = ['maintenance-mode' => FALSE]) {
+    $this->taskEnvironmentInitialize($environment)->run();
     // Not installed -> Abort.
     if (!Drupal::isInstalled()) {
       $this->yell('Site is not installed', 40, 'red');

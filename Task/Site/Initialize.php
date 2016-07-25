@@ -56,6 +56,7 @@ class Initialize extends BaseTask {
     }
 
     $collection->add([
+      'Initialize.initializeEnvironment' => new \Thunder\Robo\Task\Environment\Initialize($this->environment),
       // Ensure settings file for environment.
       'Initialize.ensureSettingsFile' => new EnsureSettingsFile($this->environment),
     ]);

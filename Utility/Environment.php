@@ -18,6 +18,36 @@ class Environment {
   const TRAVIS = 'travis';
 
   /**
+   * Environment: devdesktop
+   */
+  const DEVDESKTOP = 'devdesktop';
+
+
+  /**
+   * @var string Environment
+   */
+  private static $environment;
+
+  /**
+   * Sets the environment statically
+   *
+   * @param string $environment
+   *  The environment
+   */
+  public static function set($environment) {
+    self::$environment = $environment;
+  }
+
+  /**
+   * Gets the statically saved environment
+   *
+   * @return string The environment
+   */
+  public static function get() {
+    return self::$environment;
+  }
+
+  /**
    * Detect environment identifier from environment variable.
    *
    * @return string|null
@@ -42,7 +72,18 @@ class Environment {
     return $environment && !in_array($environment, [
       static::LOCAL,
       static::TRAVIS,
+      static::DEVDESKTOP
     ]);
+  }
+
+  /**
+   * Is DevDesktop environment?
+   *
+   * @return bool
+   *  Whether the environment is set to Acquia DevDesktop
+   */
+  public static function isDevdesktop() {
+    return self::$environment === self::DEVDESKTOP;
   }
 
   /**
@@ -55,7 +96,7 @@ class Environment {
    *   Whether the environment is valid or not.
    */
   public static function isValid($environment) {
-    return $environment && ($environment === static::LOCAL || file_exists(PathResolver::siteDirectory() . '/settings.' . $environment . '.php'));
+    return $environment && ($environment === static::LOCAL || $environment == static::DEVDESKTOP || file_exists(PathResolver::siteDirectory() . '/settings.' . $environment . '.php'));
   }
 
   /**

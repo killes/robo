@@ -10,6 +10,26 @@ use Symfony\Component\Filesystem\Filesystem;
 class PathResolver {
 
   /**
+   * @var string The path to the Acquia DevDesktop App (Defaults to MacOS path)
+   */
+  private static $devdesktopPath = '/Applications/DevDesktop';
+
+  /**
+   * @param string $path
+   *  The path to Acquia DevDesktop
+   */
+  public static function setDevdesktopPath($path) {
+    self::$devdesktopPath = $path;
+  }
+
+  /**
+   * @return string The path to Acquia DevDesktop
+   */
+  public static function getDevdesktopPath() {
+    return self::$devdesktopPath;
+  }
+
+  /**
    * Return path exported configration.
    *
    * @return string
@@ -49,6 +69,13 @@ class PathResolver {
     // Use 'drush8' binary in Acquia environments.
     if (Environment::isAcquia(Environment::detect())) {
       return 'drush8';
+    }
+
+    else if(Environment::isDevdesktop()
+      && isset(self::$devdesktopPath)
+      && file_exists(self::$devdesktopPath.'/drush/drush')) {
+
+      return static::$devdesktopPath.'/drush/drush';
     }
 
     // Use Drush binary from Composer vendor directory for all other

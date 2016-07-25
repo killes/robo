@@ -70,7 +70,6 @@ class EnsureSettingsFile extends BaseTask {
    */
   public function __construct($environment) {
     $this->environment = $environment;
-    if(Environment::isDevdesktop()) $environment = Environment::LOCAL;
     $this->file = PathResolver::siteDirectory() . '/settings.' . $environment . '.php';
   }
 

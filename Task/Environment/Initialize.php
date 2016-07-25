@@ -2,6 +2,7 @@
 
 namespace Thunder\Robo\Task\Environment;
 
+use Robo\Result;
 use Robo\Task\BaseTask;
 use Thunder\Robo\Utility\Environment;
 use Thunder\Robo\Utility\PathResolver;
@@ -26,8 +27,13 @@ class Initialize extends BaseTask {
     Environment::set($this->environment);
 
     if(Environment::isDevdesktop()) $this->ensureDevdesktopPath();
+
+    return Result::success($this);
   }
 
+  /**
+   * Ensures that the path to Acquia DevDesktop is set correctly
+   */
   public function ensureDevdesktopPath() {
     $path = PathResolver::getDevdesktopPath();
     while(!file_exists($path)) {

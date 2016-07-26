@@ -196,11 +196,13 @@ class EnsureSettingsFile extends BaseTask {
         '',
         '// Set private folder.',
         '$settings[\'file_private_path\'] = \'../private\';',
-        '',
-        '// Set hash_salt.',
-        '$settings[\'hash_salt\'] =  \'' . bin2hex(openssl_random_pseudo_bytes(10)) . '\';',
       ]);
     }
+    $lines = array_merge($lines, [
+      '',
+      '// Set hash_salt.',
+      '$settings[\'hash_salt\'] =  \'' . bin2hex(openssl_random_pseudo_bytes(10)) . '\';',
+    ]);
 
     return $lines;
   }

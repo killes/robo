@@ -13,6 +13,7 @@ class ApplyDatabaseUpdates extends DrushTask {
   public function run() {
     return $this->exec()
       ->arg('updatedb')
+      ->option('entity-updates')
       ->option('yes')
       ->run();
   }

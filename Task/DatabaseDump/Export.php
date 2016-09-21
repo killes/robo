@@ -35,18 +35,7 @@ class Export extends Dump {
    */
   protected function getStructureOnlyTableList() {
     $tables = [
-      'cache_data',
-      'cache_bootstrap',
-      'cache_container',
-      'cache_config',
-      'cache_default',
-      'cache_discovery',
-      'cache_dynamic_page_cache',
-      'cache_entity',
-      'cache_menu',
-      'cache_migrate',
-      'cache_render',
-      'cache_toolbar',
+      'cache_*',
       'cachetags',
       'watchdog',
       'sessions',

@@ -5,11 +5,11 @@ namespace Thunder\Robo\Task\Site;
 use Thunder\Robo\Task\Drush\ApplyDatabaseUpdates;
 use Thunder\Robo\Task\Drush\ApplyEntitySchemaUpdates;
 use Thunder\Robo\Task\Drush\CacheRebuild;
+use Thunder\Robo\Task\Drush\ConfigExport;
 use Thunder\Robo\Task\Drush\ConfigImport;
 use Thunder\Robo\Task\Drush\LocaleUpdate;
 use Robo\Collection\Collection;
 use Robo\Task\BaseTask;
-use Thunder\Robo\Utility\Environment;
 
 /**
  * Robo task base: Update site.
@@ -18,7 +18,7 @@ class Update extends BaseTask {
 
   /**
    * Environment.
-   * 
+   *
    * @var string
    */
   protected $environment;
@@ -52,6 +52,8 @@ class Update extends BaseTask {
       'Update.drushConfigImport' => new ConfigImport(),
       // Apply database updates.
       'Update.applyDatabaseUpdates' => new ApplyDatabaseUpdates(),
+      // Export configuration after db updates.
+      'Update.drushConfigExport' => new ConfigExport(),
       // Import configuration (again, to ensure no stale configuration updates).
       'Update.drushConfigImportAgain' => new ConfigImport(),
       // Apply entity schema updates.

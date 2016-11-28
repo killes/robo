@@ -73,9 +73,9 @@ class PathResolver {
 
     else if(Environment::isDevdesktop()
       && isset(self::$devdesktopPath)
-      && file_exists(self::$devdesktopPath.'/drush/drush')) {
+      && file_exists(self::$devdesktopPath.'/tools/drush')) {
 
-      return static::$devdesktopPath.'/drush/drush';
+      return static::$devdesktopPath.'/tools/drush';
     }
 
     // Use Drush binary from Composer vendor directory for all other

@@ -10,7 +10,7 @@
     }
   ],
   "require": {
-    "consolidation/robo": "^0.7.2"
+    "codegyre/robo": "^0.7.2"
   },
   "autoload": {
     "psr-4": {

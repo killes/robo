@@ -48,8 +48,6 @@ class Update extends BaseTask {
     $collection->add([
       // Clear all caches.
       'Update.cacheRebuild' => new CacheRebuild(),
-      // Import configuration.
-      'Update.drushConfigImport' => new ConfigImport(),
       // Apply database updates.
       'Update.applyDatabaseUpdates' => new ApplyDatabaseUpdates(),
       // Import configuration (again, to ensure no stale configuration updates).

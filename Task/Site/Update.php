@@ -18,7 +18,7 @@ class Update extends BaseTask {
 
   /**
    * Environment.
-   * 
+   *
    * @var string
    */
   protected $environment;
@@ -46,20 +46,16 @@ class Update extends BaseTask {
     $collection->add((new SetupFileSystem($this->environment))->collection());
 
     $collection->add([
-      // Clear all caches.
-      'Update.cacheRebuild' => new CacheRebuild(),
-      // Import configuration.
-      'Update.drushConfigImport' => new ConfigImport(),
       // Apply database updates.
       'Update.applyDatabaseUpdates' => new ApplyDatabaseUpdates(),
-      // Import configuration (again, to ensure no stale configuration updates).
-      'Update.drushConfigImportAgain' => new ConfigImport(),
       // Apply entity schema updates.
       'Update.applyEntitySchemaUpdates' => new ApplyEntitySchemaUpdates(),
-      // Clear all caches (again).
-      'Update.cacheRebuildAgain' => new CacheRebuild(),
+      // Import configuration.
+      'Update.drushConfigImport' => new ConfigImport(),
       // Update translations.
       'Install.localeUpdate' => new LocaleUpdate(),
+      // Clear all caches.
+      'Update.cacheRebuild' => new CacheRebuild(),
     ]);
 
     return $collection;

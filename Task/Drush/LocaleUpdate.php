@@ -3,6 +3,7 @@
 namespace Thunder\Robo\Task\Drush;
 
 use Robo\Result;
+use Thunder\Robo\Utility\Drupal;
 use Thunder\Robo\Utility\Environment;
 
 /**
@@ -34,7 +35,7 @@ class LocaleUpdate extends DrushTask {
     // This is currently needed, because the installed Drush version at Acquia
     // does not support this command yet.
     // FIXME Make this command workin in Acquia environments.
-    return Environment::isAcquia(Environment::detect());
+    return Environment::isAcquia(Environment::detect()) || !Drupal::moduleEnabled('locale');
   }
 
 }

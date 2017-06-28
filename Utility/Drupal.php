@@ -142,6 +142,44 @@ class Drupal {
   }
 
   /**
+   * Checks if a module is enabled.
+   *
+   * @param string $moduleName
+   *   Module that should be checked.
+   *
+   * @return bool
+   *   Whether the module is enabeld or not.
+   *
+   * @throws \Exception
+   *   If it's not possible to parse the module status.
+   */
+  public static function moduleEnabled($moduleName) {
+
+    // Custom output capture to ensure no output at all.
+    ob_start();
+
+    // Load Drupal core status via Drush.
+    $output = Drush::exec()
+      ->arg('pm-info')
+      ->arg($moduleName)
+      ->option('format=json')
+      ->run()
+      ->getMessage();
+
+    // End custom output capture.
+    ob_end_clean();
+
+    // Unable to parse Drupal module info JSON.
+    if (!($status = @json_decode($output))) {
+      print $output;
+
+      throw new \Exception(__CLASS__ . ' - Unable to parse module information.');
+    }
+
+    return $status->$moduleName->status == 'enabled';
+  }
+
+  /**
    * Parse Drupal core status.
    *
    * @return DrupalCoreStatus

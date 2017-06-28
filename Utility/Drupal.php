@@ -253,7 +253,7 @@ class Drupal {
   protected static function statusIsBootstrapped(DrupalCoreStatus $status) {
     $bootstrap = $status->get('bootstrap');
 
-    return !empty($bootstrap) && strtolower($bootstrap) === 'successful';
+    return !empty($bootstrap);
   }
 
 }

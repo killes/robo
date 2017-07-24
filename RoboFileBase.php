@@ -77,12 +77,12 @@ class RoboFileBase extends \Robo\Tasks implements BuilderAwareInterface {
    */
   protected function dumpUpdateCollection($environment) {
     $dump = PathResolver::databaseDump();
-    $collection = $this->collection();
+    $collection = $this->collectionBuilder();
 
     // Initialize site.
-    $collection->add($this->taskSiteInitialize($environment)->collection());
+    $collection->addTask($this->taskSiteInitialize($environment));
 
-    $collection->add([
+    $collection->addTaskList([
       // Drop all database tables.
       'Base.sqlDrop' => $this->taskDrushSqlDrop(),
       // Import database.
@@ -90,14 +90,14 @@ class RoboFileBase extends \Robo\Tasks implements BuilderAwareInterface {
     ]);
 
     // Perform update tasks.
-    $collection->add($this->taskSiteUpdate($environment)->collection());
+    $collection->addTask($this->taskSiteUpdate($environment));
 
-    $collection->add([
+    $collection->addTaskList([
       // Export database.
       'Base.databaseDumpExport' => $this->taskDatabaseDumpExport($dump),
     ]);
 
-    return $collection;
+    return $collection->original();
   }
 
   /**

@@ -45,13 +45,13 @@ class SetupFileSystem extends BaseTask implements BuilderAwareInterface {
 
     $collection->addTaskList([
       // Ensure private files directory.
-      'Setup.ensurePrivateFilesDirectory' => new EnsurePrivateFilesDirectory($this->environment),
+      'Setup.ensurePrivateFilesDirectory' => $this->collectionBuilder()->taskFileSystemEnsurePrivateFilesDirectory($this->environment),
       // Ensure public files directory.
-      'Setup.ensurePublicFilesDirectory' => new EnsurePublicFilesDirectory($this->environment),
+      'Setup.ensurePublicFilesDirectory' => $this->collectionBuilder()->taskFileSystemEnsurePublicFilesDirectory($this->environment),
       // Ensure temporary files directory.
-      'Setup.ensureTemporaryFilesDirectory' => new EnsureTemporaryFilesDirectory($this->environment),
+      'Setup.ensureTemporaryFilesDirectory' => $this->collectionBuilder()->taskFileSystemEnsureTemporaryFilesDirectory($this->environment),
       // Ensure translation files directory.
-      'Setup.ensureTranslationFilesDirectory' => new EnsureTranslationFilesDirectory($this->environment),
+      'Setup.ensureTranslationFilesDirectory' => $this->collectionBuilder()->taskFileSystemEnsureTranslationFilesDirectory($this->environment),
     ]);
 
     return $collection->original();

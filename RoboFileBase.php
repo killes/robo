@@ -160,10 +160,10 @@ class RoboFileBase extends \Robo\Tasks implements BuilderAwareInterface {
     $collection = $this->collectionBuilder();
 
     // Initialize site.
-    $collection->addTask($this->taskSiteInitialize($environment)->collection());
+    $collection->addTask($this->taskSiteInitialize($environment));
 
     // Install site.
-    $collection->addTask($this->taskSiteInstall($environment)->collection());
+    $collection->addTask($this->taskSiteInstall($environment));
 
     return $collection->original();
   }

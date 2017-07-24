@@ -51,7 +51,7 @@ class Install extends BaseTask implements BuilderAwareInterface {
       ]);
 
       // Set up file system.
-      $collection->addTask($this->collectionBuilder()->taskSiteSetupFileSystem($this->environment)->collection());
+      $collection->addTask($this->collectionBuilder()->taskSiteSetupFileSystem($this->environment));
 
       $collection->addTaskList([
         // Ensure 'config' and 'locale' module.
@@ -78,7 +78,7 @@ class Install extends BaseTask implements BuilderAwareInterface {
       ]);
 
       // Perform site update tasks
-      $collection->addTask($this->collectionBuilder()->taskSiteUpdate($this->environment)->collection());
+      $collection->addTask($this->collectionBuilder()->taskSiteUpdate($this->environment));
     }
 
     return $collection->original();

@@ -40,7 +40,7 @@ class Update extends BaseTask implements BuilderAwareInterface {
     $collection = $this->collectionBuilder();
 
     // Set up filesystem.
-    $collection->addTask($this->collectionBuilder()->taskSiteSetupFileSystem($this->environment)->collection());
+    $collection->addTask($this->collectionBuilder()->taskSiteSetupFileSystem($this->environment));
 
     $collection->addTaskList([
       // Apply database updates.

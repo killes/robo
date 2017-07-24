@@ -2,6 +2,7 @@
 
 namespace Thunder\Robo\Task\DatabaseDump;
 
+use Robo\Robo;
 use Thunder\Robo\Utility\Drush;
 
 /**
@@ -13,10 +14,12 @@ class Import extends Dump {
    * {@inheritdoc}
    */
   public function run() {
-    return Drush::exec()
+    /** @var Drush $drush */
+    $drush = Robo::getContainer()->get('drush');
+    return $drush->exec()
       ->arg('sql-cli')
-      ->arg('<')
-      ->arg(escapeshellarg($this->filepath))
+      ->rawArg('<')
+      ->arg($this->filepath)
       ->run();
   }
 

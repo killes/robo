@@ -13,7 +13,7 @@ trait loadTasks {
    * @return Initialize
    */
   protected function taskSiteInitialize($environment) {
-    return new Initialize($environment);
+    return $this->task(Initialize::class, $environment);
   }
 
   /**
@@ -25,7 +25,7 @@ trait loadTasks {
    * @return Install
    */
   protected function taskSiteInstall($environment) {
-    return new Install($environment);
+    return $this->task(Install::class, $environment);
   }
 
   /**
@@ -37,7 +37,7 @@ trait loadTasks {
    * @return MaintenanceMode
    */
   protected function taskSiteMaintenanceMode($status) {
-    return new MaintenanceMode($status);
+    return $this->task(MaintenanceMode::class, $status);
   }
 
   /**
@@ -49,7 +49,7 @@ trait loadTasks {
    * @return SetupFileSystem
    */
   protected function taskSiteSetupFileSystem($environment) {
-    return new SetupFileSystem($environment);
+    return $this->task(SetupFileSystem::class, $environment);
   }
 
   /**
@@ -61,7 +61,7 @@ trait loadTasks {
    * @return Update
    */
   protected function taskSiteUpdate($environment) {
-    return new Update($environment);
+    return $this->task(Update::class, $environment);
   }
 
 }

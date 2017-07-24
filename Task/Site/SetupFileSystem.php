@@ -2,17 +2,20 @@
 
 namespace Thunder\Robo\Task\Site;
 
+use Robo\Common\BuilderAwareTrait;
+use Robo\Contract\BuilderAwareInterface;
 use Thunder\Robo\Task\FileSystem\EnsurePrivateFilesDirectory;
 use Thunder\Robo\Task\FileSystem\EnsurePublicFilesDirectory;
 use Thunder\Robo\Task\FileSystem\EnsureTemporaryFilesDirectory;
 use Thunder\Robo\Task\FileSystem\EnsureTranslationFilesDirectory;
-use Robo\Collection\Collection;
 use Robo\Task\BaseTask;
 
 /**
  * Robo task base: Set up file system.
  */
-class SetupFileSystem extends BaseTask {
+class SetupFileSystem extends BaseTask implements BuilderAwareInterface {
+
+  use BuilderAwareTrait;
 
   /**
    * Environment.
@@ -38,9 +41,9 @@ class SetupFileSystem extends BaseTask {
    *   The task collection.
    */
   public function collection() {
-    $collection = new Collection();
+    $collection = $this->collectionBuilder();
 
-    $collection->add([
+    $collection->addTaskList([
       // Ensure private files directory.
       'Setup.ensurePrivateFilesDirectory' => new EnsurePrivateFilesDirectory($this->environment),
       // Ensure public files directory.
@@ -51,7 +54,7 @@ class SetupFileSystem extends BaseTask {
       'Setup.ensureTranslationFilesDirectory' => new EnsureTranslationFilesDirectory($this->environment),
     ]);
 
-    return $collection;
+    return $collection->original();
   }
 
   /**

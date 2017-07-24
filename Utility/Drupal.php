@@ -2,6 +2,8 @@
 
 namespace Thunder\Robo\Utility;
 
+use Robo\Robo;
+
 /**
  * A helper class for Drupal sites.
  */
@@ -111,7 +113,9 @@ class Drupal {
       // Custom output capture to ensure no output at all.
       ob_start();
 
-      $exec = Drush::exec()
+      /** @var \Thunder\Robo\Utility\Drush $drush */
+      $drush = Robo::getContainer()->get('drush');
+      $exec = $drush->exec()
         ->arg('php-eval')
         ->arg(escapeshellarg('return file_directory_os_temp();'))
         ->option('format=string')
@@ -155,19 +159,16 @@ class Drupal {
    */
   public static function moduleEnabled($moduleName) {
 
-    // Custom output capture to ensure no output at all.
-    ob_start();
-
     // Load Drupal core status via Drush.
-    $output = Drush::exec()
+    /** @var \Thunder\Robo\Utility\Drush $drush */
+    $drush = Robo::getContainer()->get('drush');
+    $output = $drush->exec()
       ->arg('pm-info')
       ->arg($moduleName)
       ->option('format=json')
+      ->silent(TRUE)
       ->run()
       ->getMessage();
-
-    // End custom output capture.
-    ob_end_clean();
 
     // Unable to parse Drupal module info JSON.
     if (!($status = @json_decode($output))) {
@@ -193,18 +194,15 @@ class Drupal {
       return $status;
     }
 
-    // Custom output capture to ensure no output at all.
-    ob_start();
-
     // Load Drupal core status via Drush.
-    $output = Drush::exec()
+    /** @var \Thunder\Robo\Utility\Drush $drush */
+    $drush = Robo::getContainer()->get('drush');
+    $output = $drush->exec()
       ->arg('core-status')
       ->option('format=json')
+      ->silent(TRUE)
       ->run()
       ->getMessage();
-
-    // End custom output capture.
-    ob_end_clean();
 
     // Unable to parse Drupal core status JSON.
     if (!($status = @json_decode($output))) {

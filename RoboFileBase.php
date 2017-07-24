@@ -2,9 +2,13 @@
 
 namespace Thunder\Robo;
 
+use Robo\Collection\CollectionBuilder;
+use Robo\Common\BuilderAwareTrait;
+use Robo\Contract\BuilderAwareInterface;
 use Robo\Result;
+use Robo\Robo;
 use Thunder\Robo\Utility\Drupal;
-use Thunder\Robo\Utility\Environment;
+use Thunder\Robo\Utility\Drush;
 use Thunder\Robo\Utility\PathResolver;
 
 /**
@@ -12,7 +16,9 @@ use Thunder\Robo\Utility\PathResolver;
  *
  * @see http://robo.li/
  */
-class RoboFileBase extends \Robo\Tasks {
+class RoboFileBase extends \Robo\Tasks implements BuilderAwareInterface {
+
+  use BuilderAwareTrait;
 
   use \Thunder\Robo\Task\DatabaseDump\loadTasks;
   use \Thunder\Robo\Task\Drush\loadTasks;
@@ -30,6 +36,8 @@ class RoboFileBase extends \Robo\Tasks {
 
     // Initialize path resolver.
     PathResolver::init(dirname($reflection->getFileName()));
+
+    Robo::getContainer()->add('drush', new Drush(CollectionBuilder::create(Robo::getContainer(), $this)));
   }
 
   /**
@@ -149,15 +157,15 @@ class RoboFileBase extends \Robo\Tasks {
    *   The task collection.
    */
   protected function siteInstallCollection($environment) {
-    $collection = $this->collection();
+    $collection = $this->collectionBuilder();
 
     // Initialize site.
-    $collection->add($this->taskSiteInitialize($environment)->collection());
+    $collection->addTask($this->taskSiteInitialize($environment)->collection());
 
     // Install site.
-    $collection->add($this->taskSiteInstall($environment)->collection());
+    $collection->addTask($this->taskSiteInstall($environment)->collection());
 
-    return $collection;
+    return $collection->original();
   }
 
   /**

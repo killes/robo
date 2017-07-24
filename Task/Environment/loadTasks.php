@@ -12,6 +12,6 @@ trait loadTasks {
    * @return Initialize
    */
   protected function taskEnvironmentInitialize($environment) {
-    return new Initialize($environment);
+    return $this->task(Initialize::class, $environment);
   }
 }

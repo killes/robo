@@ -191,21 +191,21 @@ class RoboFileBase extends \Robo\Tasks implements BuilderAwareInterface {
 
     // Installed -> run tasks.
     else {
-      $collection = $this->collection();
+      $collection = $this->collectionBuilder();
 
       // Take site offline (if --maintenance-mode option is set).
       if ($opts['maintenance-mode']) {
-        $collection->add([
+        $collection->addTaskList([
           'Update.enableMaintenanceMode' => $this->taskSiteMaintenanceMode(TRUE)
         ]);
       }
 
       // Perform update tasks.
-      $collection->add($this->siteUpdateCollection($environment));
+      $collection->addTask($this->siteUpdateCollection($environment));
 
       // Bring site back online (if --maintenance-mode option is set).
       if ($opts['maintenance-mode']) {
-        $collection->add([
+        $collection->addTaskList([
           'Update.disableMaintenanceMode' => $this->taskSiteMaintenanceMode(FALSE)
         ]);
       }
@@ -226,15 +226,15 @@ class RoboFileBase extends \Robo\Tasks implements BuilderAwareInterface {
    *   The task collection.
    */
   protected function siteUpdateCollection($environment) {
-    $collection = $this->collection();
+    $collection = $this->collectionBuilder();
 
     // Perform basic setup.
-    $collection->add($this->taskSiteInitialize($environment)->collection());
+    $collection->addTask($this->taskSiteInitialize($environment));
 
     // Update site.
-    $collection->add($this->taskSiteUpdate($environment)->collection());
+    $collection->addTask($this->taskSiteUpdate($environment));
 
-    return $collection;
+    return $collection->original();
   }
 
 }

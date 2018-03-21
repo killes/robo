@@ -163,12 +163,12 @@ class Drupal {
     /** @var \Thunder\Robo\Utility\Drush $drush */
     $drush = Robo::getContainer()->get('drush');
     $output = $drush->exec()
-      ->arg('pm-info')
-      ->arg($moduleName)
-      ->option('format=json')
+      ->arg('pm-list')
+      ->option('format json')
       ->silent(TRUE)
       ->run()
       ->getMessage();
+
 
     // Unable to parse Drupal module info JSON.
     if (!($status = @json_decode($output))) {
@@ -176,8 +176,12 @@ class Drupal {
 
       throw new \Exception(__CLASS__ . ' - Unable to parse module information.');
     }
-
-    return $status->$moduleName->status == 'enabled';
+    if (array_key_exists($moduleName, $status)) {
+      return $status->$moduleName->status == 'enabled';
+    }
+    else {
+      return FALSE;
+    }
   }
 
   /**

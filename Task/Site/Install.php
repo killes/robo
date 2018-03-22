@@ -2,23 +2,18 @@
 
 namespace Thunder\Robo\Task\Site;
 
-use Thunder\Robo\Task\DatabaseDump\Export;
-use Thunder\Robo\Task\DatabaseDump\Import;
-use Thunder\Robo\Task\Drush\CacheRebuild;
-use Thunder\Robo\Task\Drush\ConfigExport;
-use Thunder\Robo\Task\Drush\EnableExtension;
-use Thunder\Robo\Task\Drush\LocaleUpdate;
+use Robo\Common\BuilderAwareTrait;
+use Robo\Contract\BuilderAwareInterface;
 use Thunder\Robo\Task\Drush\SiteInstall;
-use Thunder\Robo\Task\Drush\SqlDrop;
-use Thunder\Robo\Task\Drush\UserLogin;
 use Thunder\Robo\Utility\PathResolver;
-use Robo\Collection\Collection;
 use Robo\Task\BaseTask;
 
 /**
  * Robo task base: Install site.
  */
-class Install extends BaseTask {
+class Install extends BaseTask implements BuilderAwareInterface {
+
+  use BuilderAwareTrait;
 
   /**
    * Environment.
@@ -44,49 +39,49 @@ class Install extends BaseTask {
    *   The task collection.
    */
   public function collection() {
-    $collection = new Collection();
+    $collection = $this->collectionBuilder();
     $dump = PathResolver::databaseDump();
 
     // No database dump file present -> perform initial installation, export
     // configuration and create database dump file.
     if (!file_exists($dump)) {
-      $collection->add([
+      $collection->addTaskList([
         // Install Drupal site.
         'Install.siteInstall' => new SiteInstall(),
       ]);
 
       // Set up file system.
-      $collection->add((new SetupFileSystem($this->environment))->collection());
+      $collection->addTask($this->collectionBuilder()->taskSiteSetupFileSystem($this->environment));
 
-      $collection->add([
+      $collection->addTaskList([
         // Ensure 'config' and 'locale' module.
-        'Install.enableExtensions' => new EnableExtension(['config', 'locale']),
+        'Install.enableExtensions' => $this->collectionBuilder()->taskDrushEnableExtension(['config', 'locale']),
         // Update translations.
-        'Install.localeUpdate' => new LocaleUpdate(),
+        'Install.localeUpdate' => $this->collectionBuilder()->taskDrushLocaleUpdate(),
         // Rebuild caches.
-        'Install.cacheRebuild' => new CacheRebuild(),
+        'Install.cacheRebuild' => $this->collectionBuilder()->taskDrushCacheRebuild(),
         // Export configuration.
-        'Install.configExport' => new ConfigExport(),
+        'Install.configExport' => $this->collectionBuilder()->taskDrushConfigExport(),
         // Export database dump file.
-        'Install.databaseDumpExport' => new Export($dump),
+        'Install.databaseDumpExport' => $this->collectionBuilder()->taskDatabaseDumpExport($dump),
       ]);
     }
 
     // Database dump file already exists -> import it and update database with
     // latest exported configuration (if any).
     else {
-      $collection->add([
+      $collection->addTaskList([
         // Drop all tables.
-        'Install.sqlDrop' => new SqlDrop(),
+        'Install.sqlDrop' => $this->collectionBuilder()->taskDrushSqlDrop(),
         // Import database dump.
-        'Install.databaseDumpImport' => new Import($dump)
+        'Install.databaseDumpImport' => $this->collectionBuilder()->taskDatabaseDumpImport($dump)
       ]);
 
       // Perform site update tasks
-      $collection->add((new Update($this->environment))->collection());
+      $collection->addTask($this->collectionBuilder()->taskSiteUpdate($this->environment));
     }
 
-    return $collection;
+    return $collection->original();
   }
 
   /**

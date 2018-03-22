@@ -13,7 +13,7 @@ trait loadTasks {
    * @return Export
    */
   protected function taskDatabaseDumpExport($filepath) {
-    return new Export($filepath);
+    return $this->task(Export::class, $filepath);
   }
 
   /**
@@ -22,10 +22,10 @@ trait loadTasks {
    * @param string $filepath
    *   The file path of the database dump.
    *
-   * @return Export
+   * @return Import
    */
   protected function taskDatabaseDumpImport($filepath) {
-    return new Import($filepath);
+    return $this->task(Import::class, $filepath);
   }
 
 }

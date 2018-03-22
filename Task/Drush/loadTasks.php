@@ -10,7 +10,7 @@ trait loadTasks {
    * @return ApplyDatabaseUpdates
    */
   protected function taskDrushApplyDatabaseUpdates() {
-    return new ApplyDatabaseUpdates();
+    return $this->task(ApplyDatabaseUpdates::class);
   }
 
   /**
@@ -19,7 +19,7 @@ trait loadTasks {
    * @return ApplyEntitySchemaUpdates
    */
   protected function taskDrushEntitySchemaUpdates() {
-    return new ApplyEntitySchemaUpdates();
+    return $this->task(ApplyEntitySchemaUpdates::class);
   }
 
   /**
@@ -28,7 +28,7 @@ trait loadTasks {
    * @return CacheRebuild
    */
   protected function taskDrushCacheRebuild() {
-    return new CacheRebuild();
+    return $this->task(CacheRebuild::class);
   }
 
   /**
@@ -37,7 +37,7 @@ trait loadTasks {
    * @return ConfigImport
    */
   protected function taskDrushConfigImport() {
-    return new ConfigImport();
+    return $this->task(ConfigImport::class);
   }
 
   /**
@@ -46,7 +46,7 @@ trait loadTasks {
    * @return ConfigExport
    */
   protected function taskDrushConfigExport() {
-    return new ConfigExport();
+    return $this->task(ConfigExport::class);
   }
 
   /**
@@ -58,7 +58,7 @@ trait loadTasks {
    * @return EnableExtension
    */
   protected function taskDrushEnableExtension(array $extensions) {
-    return new EnableExtension($extensions);
+    return $this->task(EnableExtension::class, $extensions);
   }
 
   /**
@@ -67,7 +67,7 @@ trait loadTasks {
    * @return LocaleUpdate
    */
   protected function taskDrushLocaleUpdate() {
-    return new LocaleUpdate();
+    return $this->task(LocaleUpdate::class);
   }
 
   /**
@@ -76,7 +76,7 @@ trait loadTasks {
    * @return SiteInstall
    */
   protected function taskDrushSiteInstall() {
-    return new SiteInstall();
+    return $this->task(SiteInstall::class);
   }
 
   /**
@@ -85,7 +85,7 @@ trait loadTasks {
    * @return SqlDrop
    */
   protected function taskDrushSqlDrop() {
-    return new SqlDrop();
+    return $this->task(SqlDrop::class);
   }
 
   /**
@@ -103,7 +103,7 @@ trait loadTasks {
    * @return StateSet
    */
   protected function taskDrushStateSet($key, $value, $format = 'auto') {
-    return new StateSet($key, $value, $format);
+    return $this->task(StateSet::class, $key, $value, $format);
   }
 
   /**
@@ -116,7 +116,7 @@ trait loadTasks {
    * @return UserLogin
    */
   protected function taskDrushUserLogin($user = 1) {
-    return new UserLogin($user);
+    return $this->task(UserLogin::class, $user);
   }
 
 }

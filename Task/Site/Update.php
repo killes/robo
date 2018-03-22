@@ -2,19 +2,16 @@
 
 namespace Thunder\Robo\Task\Site;
 
-use Thunder\Robo\Task\Drush\ApplyDatabaseUpdates;
-use Thunder\Robo\Task\Drush\ApplyEntitySchemaUpdates;
-use Thunder\Robo\Task\Drush\CacheRebuild;
-use Thunder\Robo\Task\Drush\ConfigImport;
-use Thunder\Robo\Task\Drush\LocaleUpdate;
-use Robo\Collection\Collection;
+use Robo\Common\BuilderAwareTrait;
+use Robo\Contract\BuilderAwareInterface;
 use Robo\Task\BaseTask;
-use Thunder\Robo\Utility\Environment;
 
 /**
  * Robo task base: Update site.
  */
-class Update extends BaseTask {
+class Update extends BaseTask implements BuilderAwareInterface {
+
+  use BuilderAwareTrait;
 
   /**
    * Environment.
@@ -40,25 +37,25 @@ class Update extends BaseTask {
    *   The task collection.
    */
   public function collection() {
-    $collection = new Collection();
+    $collection = $this->collectionBuilder();
 
     // Set up filesystem.
-    $collection->add((new SetupFileSystem($this->environment))->collection());
+    $collection->addTask($this->collectionBuilder()->taskSiteSetupFileSystem($this->environment));
 
-    $collection->add([
+    $collection->addTaskList([
       // Apply database updates.
-      'Update.applyDatabaseUpdates' => new ApplyDatabaseUpdates(),
+      'Update.applyDatabaseUpdates' => $this->collectionBuilder()->taskDrushApplyDatabaseUpdates(),
       // Apply entity schema updates.
-      'Update.applyEntitySchemaUpdates' => new ApplyEntitySchemaUpdates(),
+      'Update.applyEntitySchemaUpdates' => $this->collectionBuilder()->taskDrushEntitySchemaUpdates(),
       // Import configuration.
-      'Update.drushConfigImport' => new ConfigImport(),
+      'Update.drushConfigImport' => $this->collectionBuilder()->taskDrushConfigImport(),
       // Update translations.
-      'Install.localeUpdate' => new LocaleUpdate(),
+      'Install.localeUpdate' => $this->collectionBuilder()->taskDrushLocaleUpdate(),
       // Clear all caches.
-      'Update.cacheRebuild' => new CacheRebuild(),
+      'Update.cacheRebuild' => $this->collectionBuilder()->taskDrushCacheRebuild(),
     ]);
 
-    return $collection;
+    return $collection->original();
   }
 
   /**

@@ -2,16 +2,21 @@
 
 namespace Thunder\Robo\Task\Settings;
 
+use Robo\Common\BuilderAwareTrait;
+use Robo\Common\IO;
+use Robo\Contract\BuilderAwareInterface;
 use Thunder\Robo\Utility\Environment;
 use Thunder\Robo\Utility\PathResolver;
 use Robo\Result;
 use Robo\Task\BaseTask;
-use Robo\Task\File\Write;
 
 /**
  * Robo task base: Ensure settings file for environment.
  */
-class EnsureSettingsFile extends BaseTask {
+class EnsureSettingsFile extends BaseTask implements BuilderAwareInterface {
+
+  use IO;
+  use BuilderAwareTrait;
 
   /**
    * Database: Host.
@@ -78,21 +83,10 @@ class EnsureSettingsFile extends BaseTask {
    */
   public function run() {
     if (!$this->skip()) {
-      $this->say('Settings file not available: ' . $this->file);
-      $this->say('Let\'s create one...');
+      $this->printTaskError('Settings file not available: ' . $this->file);
+      $this->printTaskError('Please create one.');
 
-      // TODO: use a default development settings file for all local environments and add database config as necessary
-      if(!$this->skipDatabaseConnection()) {
-        $this->db_host = $this->askDefault('Host', 'localhost');
-        $this->db_port = $this->askDefault('Port', '3306');
-        $this->db_name = $this->askDefault('Database', 'drupal');
-        $this->db_user = $this->askDefault('User', 'root');
-        $this->db_pass = $this->askDefault('Password', '');
-      }
-
-      return (new Write($this->file))
-        ->lines($this->lines())
-        ->run();
+      return Result::error($this, 'Settings file not available: ' . $this->file);
     }
 
     return Result::success($this);

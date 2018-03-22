@@ -13,7 +13,7 @@ trait loadTasks {
    * @return EnsureSettingsFile
    */
   protected function taskSettingsEnsureSettingsFile($environment) {
-    return new EnsureSettingsFile($environment);
+    return $this->task(EnsureSettingsFile::class, $environment);
   }
 
 }

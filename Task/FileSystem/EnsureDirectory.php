@@ -2,6 +2,8 @@
 
 namespace Thunder\Robo\Task\FileSystem;
 
+use Robo\Common\BuilderAwareTrait;
+use Robo\Contract\BuilderAwareInterface;
 use Robo\Result;
 use Robo\Task\BaseTask;
 use Robo\Task\FileSystem\FilesystemStack;
@@ -10,7 +12,9 @@ use Thunder\Robo\Utility\Drupal;
 /**
  * Robo task base: Ensure directory.
  */
-abstract class EnsureDirectory extends BaseTask {
+abstract class EnsureDirectory extends BaseTask implements BuilderAwareInterface {
+
+  use BuilderAwareTrait;
 
   /**
    * Environment.
@@ -51,7 +55,8 @@ abstract class EnsureDirectory extends BaseTask {
    * {@inheritdoc}
    */
   public function run() {
-    $stack = new FilesystemStack();
+    /** @var FilesystemStack $stack */
+    $stack = $this->collectionBuilder()->taskFilesystemStack();
 
     // Skip this task?
     if ($this->skip()) {

@@ -13,7 +13,7 @@ trait loadTasks {
    * @return EnsurePrivateFilesDirectory
    */
   protected function taskFileSystemEnsurePrivateFilesDirectory($environment) {
-    return new EnsurePrivateFilesDirectory($environment);
+    return $this->task(EnsurePrivateFilesDirectory::class, $environment);
   }
 
   /**
@@ -25,7 +25,7 @@ trait loadTasks {
    * @return EnsurePublicFilesDirectory
    */
   protected function taskFileSystemEnsurePublicFilesDirectory($environment) {
-    return new EnsurePublicFilesDirectory($environment);
+    return $this->task(EnsurePublicFilesDirectory::class, $environment);
   }
 
   /**
@@ -37,7 +37,7 @@ trait loadTasks {
    * @return EnsureTemporaryFilesDirectory
    */
   protected function taskFileSystemEnsureTemporaryFilesDirectory($environment) {
-    return new EnsureTemporaryFilesDirectory($environment);
+    return $this->task(EnsureTemporaryFilesDirectory::class, $environment);
   }
 
   /**
@@ -49,7 +49,7 @@ trait loadTasks {
    * @return EnsureTranslationFilesDirectory
    */
   protected function taskFileSystemEnsureTranslationFilesDirectory($environment) {
-    return new EnsureTranslationFilesDirectory($environment);
+    return $this->task(EnsureTranslationFilesDirectory::class, $environment);
   }
 
 }

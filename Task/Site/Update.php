@@ -45,8 +45,6 @@ class Update extends BaseTask implements BuilderAwareInterface {
     $collection->addTaskList([
       // Apply database updates.
       'Update.applyDatabaseUpdates' => $this->collectionBuilder()->taskDrushApplyDatabaseUpdates(),
-      // Apply entity schema updates.
-      'Update.applyEntitySchemaUpdates' => $this->collectionBuilder()->taskDrushEntitySchemaUpdates(),
       // Import configuration.
       'Update.drushConfigImport' => $this->collectionBuilder()->taskDrushConfigImport(),
       // Update translations.

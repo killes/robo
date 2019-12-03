@@ -164,7 +164,7 @@ class Drupal {
     $drush = Robo::getContainer()->get('drush');
     $output = $drush->exec()
       ->arg('pm-list')
-      ->option('format json')
+      ->option('format=json')
       ->silent(TRUE)
       ->run()
       ->getMessage();

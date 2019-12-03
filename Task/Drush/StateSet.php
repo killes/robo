@@ -54,7 +54,7 @@ class StateSet extends DrushTask {
       ->arg('state-set')
       ->arg($this->key)
       ->arg($this->value)
-      ->option('format=' . $this->format)
+      ->option('input-format=' . $this->format)
       ->run();
   }
 

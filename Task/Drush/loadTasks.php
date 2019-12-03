@@ -14,15 +14,6 @@ trait loadTasks {
   }
 
   /**
-   * Apply entity schema updates.
-   *
-   * @return ApplyEntitySchemaUpdates
-   */
-  protected function taskDrushEntitySchemaUpdates() {
-    return $this->task(ApplyEntitySchemaUpdates::class);
-  }
-
-  /**
    * Rebuild caches.
    *
    * @return CacheRebuild

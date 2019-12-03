@@ -10,7 +10,9 @@
     }
   ],
   "require": {
-    "consolidation/robo": "^1.2"
+    "consolidation/robo": "^1.2",
+    "drupal/core": "^8.7.0",
+    "drush/drush": "~9.5"
   },
   "autoload": {
     "psr-4": {

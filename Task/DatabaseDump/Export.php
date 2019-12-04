@@ -21,7 +21,7 @@ class Export extends Dump {
       ->rawArg('>')
       ->arg($this->filepath)
       ->option('ordered-dump')
-      ->option('extra=--skip-comments')
+      ->option('extra-dump=--skip-comments')
       ->option('structure-tables-list=' . escapeshellarg(implode(',', $this->getStructureOnlyTableList())))
       ->run();
   }

@@ -2,6 +2,7 @@
 
 namespace Thunder\Robo\Task\Drush;
 
+use Robo\Robo;
 use Thunder\Robo\Utility\Drush;
 use Robo\Task\BaseTask;
 
@@ -16,7 +17,9 @@ abstract class DrushTask extends BaseTask {
    * @return \Robo\Task\Base\Exec
    */
   protected function exec() {
-    return Drush::exec();
+    /** @var Drush $drush */
+    $drush = Robo::getContainer()->get('drush');
+    return $drush->exec();
   }
 
 }

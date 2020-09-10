@@ -52,9 +52,9 @@ class StateSet extends DrushTask {
   public function run() {
     return $this->exec()
       ->arg('state-set')
-      ->arg(escapeshellarg($this->key))
-      ->arg(escapeshellarg($this->value))
-      ->option('format=' . $this->format)
+      ->arg($this->key)
+      ->arg($this->value)
+      ->option('input-format=' . $this->format)
       ->run();
   }
 

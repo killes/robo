@@ -66,9 +66,9 @@ class PathResolver {
    *   The path to the Drush binary.
    */
   public static function drush() {
-    // Use 'drush8' binary in Acquia environments.
+    // Use 'drush9' binary in Acquia environments.
     if (Environment::isAcquia(Environment::detect())) {
-      return 'drush8';
+      return 'drush9';
     }
 
     else if(Environment::isDevdesktop()

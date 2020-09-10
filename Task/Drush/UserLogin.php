@@ -1,11 +1,14 @@
 <?php
 
 namespace Thunder\Robo\Task\Drush;
+use Robo\Common\TaskIO;
 
 /**
  * Robo task: Display one-time login URL.
  */
 class UserLogin extends DrushTask {
+
+  use TaskIO;
 
   /**
    * User
@@ -29,11 +32,11 @@ class UserLogin extends DrushTask {
    * {@inheritdoc}
    */
   public function run() {
-    $this->yell('Login URL', 20);
+    $this->printTaskInfo('Login URL');
 
     return $this->exec()
       ->arg('user-login')
-      ->arg(escapeshellarg($this->user))
+      ->arg($this->user)
       ->option('no-browser')
       ->run();
   }

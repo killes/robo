@@ -2,6 +2,7 @@
 
 namespace Thunder\Robo\Task\DatabaseDump;
 
+use Robo\Robo;
 use Thunder\Robo\Utility\Drush;
 
 /**
@@ -13,12 +14,14 @@ class Export extends Dump {
    * {@inheritdoc}
    */
   public function run() {
-    return Drush::exec()
+    /** @var Drush $drush */
+    $drush = Robo::getContainer()->get('drush');
+    return $drush->exec()
       ->arg('sql-dump')
-      ->arg('>')
-      ->arg(escapeshellarg($this->filepath))
+      ->rawArg('>')
+      ->arg($this->filepath)
       ->option('ordered-dump')
-      ->option('extra=--skip-comments')
+      ->option('extra-dump=--skip-comments')
       ->option('structure-tables-list=' . escapeshellarg(implode(',', $this->getStructureOnlyTableList())))
       ->run();
   }

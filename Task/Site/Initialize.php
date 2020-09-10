@@ -2,17 +2,18 @@
 
 namespace Thunder\Robo\Task\Site;
 
-use Thunder\Robo\Task\Settings\EnsureSettingsFile;
+use Robo\Common\BuilderAwareTrait;
+use Robo\Contract\BuilderAwareInterface;
 use Thunder\Robo\Utility\Environment;
-use Thunder\Robo\Utility\PathResolver;
-use Robo\Collection\Collection;
 use Robo\Task\BaseTask;
-use Robo\Task\Composer\Install as ComposerInstall;
+use Thunder\Robo\Utility\PathResolver;
 
 /**
  * Robo task base: Initialize site.
  */
-class Initialize extends BaseTask {
+class Initialize extends BaseTask implements BuilderAwareInterface {
+
+  use BuilderAwareTrait;
 
   /**
    * Environment.
@@ -43,25 +44,22 @@ class Initialize extends BaseTask {
    *   The task collection.
    */
   public function collection() {
-    $collection = new Collection();
+    $collection = $this->collectionBuilder();
 
     // Build has to be performed?
     if (Environment::needsBuild($this->environment)) {
-      $collection->add([
-        // Run 'composer install'.
-        'Initialize.composerInstall' => (new ComposerInstall())
-          ->dir(PathResolver::root())
-          ->option('optimize-autoloader'),
-      ]);
+      $collection->taskComposerInstall()
+        ->dir(PathResolver::root())
+        ->option('optimize-autoloader');
     }
 
-    $collection->add([
-      'Initialize.initializeEnvironment' => new \Thunder\Robo\Task\Environment\Initialize($this->environment),
+    $collection->addTaskList([
+      'Initialize.initializeEnvironment' => $this->collectionBuilder()->taskEnvironmentInitialize($this->environment),
       // Ensure settings file for environment.
-      'Initialize.ensureSettingsFile' => new EnsureSettingsFile($this->environment),
+      'Initialize.ensureSettingsFile' => $this->collectionBuilder()->taskSettingsEnsureSettingsFile($this->environment),
     ]);
 
-    return $collection;
+    return $collection->original();
   }
 
   /**

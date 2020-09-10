@@ -2,9 +2,13 @@
 
 namespace Thunder\Robo;
 
+use Robo\Collection\CollectionBuilder;
+use Robo\Common\BuilderAwareTrait;
+use Robo\Contract\BuilderAwareInterface;
 use Robo\Result;
+use Robo\Robo;
 use Thunder\Robo\Utility\Drupal;
-use Thunder\Robo\Utility\Environment;
+use Thunder\Robo\Utility\Drush;
 use Thunder\Robo\Utility\PathResolver;
 
 /**
@@ -12,7 +16,9 @@ use Thunder\Robo\Utility\PathResolver;
  *
  * @see http://robo.li/
  */
-class RoboFileBase extends \Robo\Tasks {
+class RoboFileBase extends \Robo\Tasks implements BuilderAwareInterface {
+
+  use BuilderAwareTrait;
 
   use \Thunder\Robo\Task\DatabaseDump\loadTasks;
   use \Thunder\Robo\Task\Drush\loadTasks;
@@ -30,6 +36,8 @@ class RoboFileBase extends \Robo\Tasks {
 
     // Initialize path resolver.
     PathResolver::init(dirname($reflection->getFileName()));
+
+    Robo::getContainer()->add('drush', new Drush(CollectionBuilder::create(Robo::getContainer(), $this)));
   }
 
   /**
@@ -69,12 +77,12 @@ class RoboFileBase extends \Robo\Tasks {
    */
   protected function dumpUpdateCollection($environment) {
     $dump = PathResolver::databaseDump();
-    $collection = $this->collection();
+    $collection = $this->collectionBuilder();
 
     // Initialize site.
-    $collection->add($this->taskSiteInitialize($environment)->collection());
+    $collection->addTask($this->taskSiteInitialize($environment));
 
-    $collection->add([
+    $collection->addTaskList([
       // Drop all database tables.
       'Base.sqlDrop' => $this->taskDrushSqlDrop(),
       // Import database.
@@ -82,14 +90,14 @@ class RoboFileBase extends \Robo\Tasks {
     ]);
 
     // Perform update tasks.
-    $collection->add($this->taskSiteUpdate($environment)->collection());
+    $collection->addTask($this->taskSiteUpdate($environment));
 
-    $collection->add([
+    $collection->addTaskList([
       // Export database.
       'Base.databaseDumpExport' => $this->taskDatabaseDumpExport($dump),
     ]);
 
-    return $collection;
+    return $collection->original();
   }
 
   /**
@@ -149,15 +157,15 @@ class RoboFileBase extends \Robo\Tasks {
    *   The task collection.
    */
   protected function siteInstallCollection($environment) {
-    $collection = $this->collection();
+    $collection = $this->collectionBuilder();
 
     // Initialize site.
-    $collection->add($this->taskSiteInitialize($environment)->collection());
+    $collection->addTask($this->taskSiteInitialize($environment));
 
     // Install site.
-    $collection->add($this->taskSiteInstall($environment)->collection());
+    $collection->addTask($this->taskSiteInstall($environment));
 
-    return $collection;
+    return $collection->original();
   }
 
   /**
@@ -183,21 +191,21 @@ class RoboFileBase extends \Robo\Tasks {
 
     // Installed -> run tasks.
     else {
-      $collection = $this->collection();
+      $collection = $this->collectionBuilder();
 
       // Take site offline (if --maintenance-mode option is set).
       if ($opts['maintenance-mode']) {
-        $collection->add([
+        $collection->addTaskList([
           'Update.enableMaintenanceMode' => $this->taskSiteMaintenanceMode(TRUE)
         ]);
       }
 
       // Perform update tasks.
-      $collection->add($this->siteUpdateCollection($environment));
+      $collection->addTask($this->siteUpdateCollection($environment));
 
       // Bring site back online (if --maintenance-mode option is set).
       if ($opts['maintenance-mode']) {
-        $collection->add([
+        $collection->addTaskList([
           'Update.disableMaintenanceMode' => $this->taskSiteMaintenanceMode(FALSE)
         ]);
       }
@@ -218,15 +226,15 @@ class RoboFileBase extends \Robo\Tasks {
    *   The task collection.
    */
   protected function siteUpdateCollection($environment) {
-    $collection = $this->collection();
+    $collection = $this->collectionBuilder();
 
     // Perform basic setup.
-    $collection->add($this->taskSiteInitialize($environment)->collection());
+    $collection->addTask($this->taskSiteInitialize($environment));
 
     // Update site.
-    $collection->add($this->taskSiteUpdate($environment)->collection());
+    $collection->addTask($this->taskSiteUpdate($environment));
 
-    return $collection;
+    return $collection->original();
   }
 
 }
